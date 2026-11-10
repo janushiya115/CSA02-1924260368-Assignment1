@@ -1,56 +1,53 @@
 #include <stdio.h>
+#include <limits.h>
+
+typedef unsigned short meter_t;
+
+#define SLAB1 100
+#define SLAB2 200
+#define RATE2 225
+#define RATE3 450
+#define FIXED 5000L
+
+unsigned int consumption(meter_t previous, meter_t current)
+{
+    return (meter_t)(current - previous);
+}
+
+long long compute_bill(unsigned int units)
+{
+    long long bill = FIXED;
+
+    if (units > SLAB2)
+    {
+        bill += 100LL * RATE2;
+        bill += (long long)(units - SLAB2) * RATE3;
+    }
+    else if (units > SLAB1)
+    {
+        bill += (long long)(units - SLAB1) * RATE2;
+    }
+
+    return bill;
+}
 
 int main()
 {
-    int units, slab1, slab2;
-    int rate1, rate2, rate3;
-    long fixed, energy = 0, total;
-    FILE *fp;
+    meter_t previous = 1200;
+    meter_t current = 1530;
 
-    fp = fopen("tariff.txt", "r");
+    unsigned int units = consumption(previous, current);
 
-    if (fp == NULL)
-    {
-        printf("File not found!");
-        return 1;
-    }
+    long long bill = compute_bill(units);
 
-    fscanf(fp, "%d %d %d %d %d %ld",
-           &slab1, &slab2, &rate1, &rate2,
-           &rate3, &fixed);
+    printf("Previous Reading = %u\n", previous);
+    printf("Current Reading = %u\n", current);
+    printf("Units Consumed = %u\n", units);
 
-    fclose(fp);
+    printf("Total Bill = Rs %lld.%02lld\n",
+           bill / 100, bill % 100);
 
-    printf("Enter units consumed: ");
-    scanf("%d", &units);
-
-    if (units < 0)
-    {
-        printf("Invalid units!");
-        return 1;
-    }
-
-    if (units > slab2)
-    {
-        energy += (long)(units - slab2) * rate3;
-        units = slab2;
-    }
-
-    if (units > slab1)
-    {
-        energy += (long)(units - slab1) * rate2;
-        units = slab1;
-    }
-
-    energy += (long)units * rate1;
-
-    total = fixed + energy;
-
-    printf("Energy Charge: Rs %ld.%02ld\n",
-           energy / 100, energy % 100);
-
-    printf("Total Bill: Rs %ld.%02ld\n",
-           total / 100, total % 100);
+    printf("Maximum Meter Reading = %u\n", USHRT_MAX);
 
     return 0;
 }
