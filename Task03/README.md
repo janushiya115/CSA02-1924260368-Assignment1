@@ -13,24 +13,22 @@ long compute_bill(int units)
 
     if (units > SLAB2_UNITS)
     {
-        paise += (long)(units - SLAB2_UNITS) * RATE3_PAISE;
-        units = SLAB2_UNITS;
+        paise += (units - SLAB2_UNITS) * RATE3_PAISE;
+        paise += (SLAB2_UNITS - SLAB1_UNITS) * RATE2_PAISE;
     }
-
-    if (units > SLAB1_UNITS)
+    else if (units > SLAB1_UNITS)
     {
-        paise += (long)(units - SLAB1_UNITS) * RATE2_PAISE;
+        paise += (units - SLAB1_UNITS) * RATE2_PAISE;
     }
 
     return paise;
 }
 
-int main(void)
+int main()
 {
     int tests[] = {0, 100, 150, 200, 350};
-    int n = sizeof tests / sizeof tests[0];
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < 5; i++)
     {
         long p = compute_bill(tests[i]);
 
